@@ -270,62 +270,7 @@ export function maskEmail(email: string): string {
 }
 
 // --- Products CRUD ---
-const DEFAULT_PRODUCTS: Product[] = [
-  {
-    id: 'p_1', title: 'Walnut Serving Board', titleAr: 'لوح تقديم الجوز',
-    category: 'Serving', categoryAr: 'تقديم', price: '$245', img: '/images/product-1.jpg',
-    description: 'Made from premium black walnut, sanded to 400 grit', descriptionAr: 'مصنوع من الجوز الأسود الفاخر، مصقول حتى 400 حبيبة',
-    material: 'American Black Walnut', materialAr: 'جوز أسود أمريكي',
-    dimensions: '18" × 12" × 0.75"', dimensionsAr: '45 × 30 × 2 سم',
-    care: 'Hand wash only, oil monthly', careAr: 'اغسل يدوياً، زيت معدني شهرياً',
-    status: 'inStock', featured: true,
-  },
-  {
-    id: 'p_2', title: 'Oak Cutting Board', titleAr: 'لوح تقطيع البلوط',
-    category: 'Cutting', categoryAr: 'تقطيع', price: '$195', img: '/images/product-2.jpg',
-    description: 'End-grain construction, carved handle', descriptionAr: 'بناء من الحبوب النهائية، مقبض منحوت',
-    material: 'White Oak', materialAr: 'بلوط أبيض',
-    dimensions: '16" × 12" × 1.5"', dimensionsAr: '40 × 30 × 4 سم',
-    care: 'Hand wash, beeswax monthly', careAr: 'اغسل يدوياً، شمع العسل شهرياً',
-    status: 'inStock', featured: true,
-  },
-  {
-    id: 'p_3', title: 'Maple Jewelry Box', titleAr: 'صندوق مجوهرات القيقب',
-    category: 'Boxes', categoryAr: 'صناديق', price: '$320', img: '/images/product-3.jpg',
-    description: 'Brass hinges, velvet-lined interior', descriptionAr: 'مفصلات نحاسية، بطانة مخملية',
-    material: 'Hard Maple', materialAr: 'قيقب صلب',
-    dimensions: '10" × 8" × 6"', dimensionsAr: '25 × 20 × 15 سم',
-    care: 'Wipe with dry cloth', careAr: 'امسح بقطعة قماش جافة',
-    status: 'limited', featured: true,
-  },
-  {
-    id: 'p_4', title: 'Cherry Salad Bowl', titleAr: 'سلطة الكرز',
-    category: 'Bowls', categoryAr: 'سلطانيات', price: '$185', img: '/images/product-1.jpg',
-    description: 'Deep bowl from natural cherry wood', descriptionAr: 'وعاء عميق من خشب الكرز الطبيعي',
-    material: 'American Cherry', materialAr: 'كرز أمريكي',
-    dimensions: '11" × 5"', dimensionsAr: '28 × 12 سم',
-    care: 'Wash immediately by hand', careAr: 'اغسل يدوياً فوراً',
-    status: 'inStock', featured: false,
-  },
-  {
-    id: 'p_5', title: 'Utensil Set', titleAr: 'طقم أدوات المائدة',
-    category: 'Utensils', categoryAr: 'أدوات', price: '$95', img: '/images/product-2.jpg',
-    description: '5-piece walnut set with holder', descriptionAr: '5 قطع من الجوز مع حامل',
-    material: 'Walnut & Olive', materialAr: 'جوز وزيتون',
-    dimensions: '12" × 3" × 3"', dimensionsAr: '30 × 8 × 8 سم',
-    care: 'Hand wash, oil weekly', careAr: 'اغسل يدوياً، زيت أسبوعياً',
-    status: 'inStock', featured: false,
-  },
-  {
-    id: 'p_6', title: 'Charcuterie Board', titleAr: 'لوح الجبن الفاخر',
-    category: 'Serving', categoryAr: 'تقديم', price: '$275', img: '/images/product-3.jpg',
-    description: 'Mixed wood with unique pattern', descriptionAr: 'خشب ممزوج بتصميم فريد',
-    material: 'Walnut, Oak & Maple', materialAr: 'جوز وبلوط وقيقب',
-    dimensions: '20" × 14" × 0.75"', dimensionsAr: '50 × 35 × 2 سم',
-    care: 'Wipe clean, oil monthly', careAr: 'امسح، زيت شهرياً',
-    status: 'madeToOrder', featured: false,
-  },
-];
+const DEFAULT_PRODUCTS: Product[] = [];
 
 export function getProducts(): Product[] {
   const stored = localStorage.getItem(STORAGE_KEYS.products);
