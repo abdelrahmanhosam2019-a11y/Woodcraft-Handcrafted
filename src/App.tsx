@@ -58,9 +58,7 @@ function Navbar({ onOpenAdmin }: { onOpenAdmin: () => void }) {
       >
         <div className="mx-auto max-w-7xl px-6 md:px-10 flex items-center justify-between gap-3">
           <a href="#" className="flex items-center gap-2.5 group shrink-0" aria-label="Woodcraft home">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-amber to-amber-deep flex items-center justify-center shadow-[0_0_20px_rgba(194,136,58,0.3)] group-hover:shadow-[0_0_25px_rgba(194,136,58,0.45)] transition-shadow">
-              <Sparkles className="w-4.5 h-4.5 text-ink-soft" strokeWidth={2.5} />
-            </div>
+            <img src="/images/logo-icon.svg" alt="Woodcraft" className="w-9 h-9 rounded-lg shadow-[0_0_20px_rgba(194,136,58,0.3)] group-hover:shadow-[0_0_25px_rgba(194,136,58,0.45)] transition-shadow" />
             <span className="font-display text-xl tracking-tight text-cream">Woodcraft</span>
           </a>
 
@@ -1137,9 +1135,7 @@ function Footer() {
         <div className="grid md:grid-cols-4 gap-12 md:gap-10 mb-16">
           <div className="md:col-span-2">
             <a href="#" className="flex items-center gap-2.5 mb-6" aria-label="Woodcraft home">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-amber to-amber-deep flex items-center justify-center shadow-[0_0_20px_rgba(194,136,58,0.3)]">
-                <Sparkles className="w-4.5 h-4.5 text-ink-soft" strokeWidth={2.5} />
-              </div>
+              <img src="/images/logo-icon.svg" alt="Woodcraft" className="w-9 h-9 rounded-lg shadow-[0_0_20px_rgba(194,136,58,0.3)]" />
               <span className="font-display text-xl tracking-tight text-cream">Woodcraft</span>
             </a>
             <p className="text-sm text-parchment/40 leading-relaxed max-w-sm mb-5">{t('footer.desc')}</p>

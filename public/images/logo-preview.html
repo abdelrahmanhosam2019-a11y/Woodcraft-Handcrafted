@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Woodcraft Logo Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #1a1917; font-family: 'Inter', sans-serif; padding: 40px; }
+    .preview { max-width: 900px; margin: 0 auto; }
+    h1 { color: #f6f2ea; font-family: 'Instrument Serif', serif; font-size: 28px; margin-bottom: 40px; text-align: center; }
+    .card { background: #0f0e0c; border-radius: 16px; padding: 40px; margin-bottom: 24px; display: flex; align-items: center; gap: 40px; border: 1px solid rgba(255,255,255,0.05); }
+    .card.dark { background: #0f0e0c; }
+    .card.light { background: #f6f2ea; }
+    .card img { flex-shrink: 0; }
+    .info { flex: 1; }
+    .info h3 { color: #c2883a; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px; }
+    .card.light .info h3 { color: #a06e2a; }
+    .info p { color: rgba(246,242,234,0.5); font-size: 13px; line-height: 1.6; }
+    .card.light .info p { color: rgba(15,14,12,0.5); }
+    .sizes { display: flex; gap: 20px; align-items: end; margin-top: 20px; }
+    .size-item { text-align: center; }
+    .size-item img { display: block; margin-bottom: 8px; }
+    .size-item span { color: rgba(246,242,234,0.3); font-size: 10px; }
+    .usage { background: #0f0e0c; border-radius: 16px; padding: 40px; border: 1px solid rgba(255,255,255,0.05); }
+    .usage h3 { color: #c2883a; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; }
+    .usage code { color: #f6f2ea; background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+    .usage pre { color: rgba(246,242,234,0.6); font-size: 12px; line-height: 1.8; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <div class="preview">
+    <h1>Woodcraft Logo — Design Preview</h1>
+
+    <div class="card dark">
+      <img src="logo.svg" alt="Woodcraft Logo" height="80">
+      <div class="info">
+        <h3>Full Logo — Dark Background</h3>
+        <p>The primary logo for use on dark backgrounds. Features the wood ring motif icon with gold gradient and elegant serif typography.</p>
+      </div>
+    </div>
+
+    <div class="card light">
+      <img src="logo.svg" alt="Woodcraft Logo" height="80">
+      <div class="info">
+        <h3>Full Logo — Light Background</h3>
+        <p>Works on light backgrounds too. The dark background of the SVG blends seamlessly.</p>
+      </div>
+    </div>
+
+    <div class="card dark">
+      <div class="sizes">
+        <div class="size-item">
+          <img src="logo-icon.svg" width="64" height="64" alt="Icon 64px">
+          <span>64 × 64</span>
+        </div>
+        <div class="size-item">
+          <img src="logo-icon.svg" width="48" height="48" alt="Icon 48px">
+          <span>48 × 48</span>
+        </div>
+        <div class="size-item">
+          <img src="logo-icon.svg" width="32" height="32" alt="Icon 32px">
+          <span>32 × 32</span>
+        </div>
+        <div class="size-item">
+          <img src="logo-icon.svg" width="24" height="24" alt="Icon 24px">
+          <span>24 × 24</span>
+        </div>
+      </div>
+      <div class="info">
+        <h3>Icon Variants</h3>
+        <p>Used for favicon, mobile app icon, and small contexts.</p>
+      </div>
+    </div>
+
+    <div class="usage">
+      <h3>Usage</h3>
+      <pre>
+  Full logo:    &lt;img src="/images/logo.svg" alt="Woodcraft" height="60" /&gt;
+  Icon only:    &lt;img src="/images/logo-icon.svg" alt="Woodcraft" height="32" /&gt;
+  Navbar:       Already integrated with Sparkles icon in the current code
+      </pre>
+    </div>
+  </div>
+</body>
+</html>
