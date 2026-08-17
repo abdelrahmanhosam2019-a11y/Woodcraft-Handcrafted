@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { LangProvider, useLang } from './i18n';
 import { AdminPanel } from './AdminPanel';
-import { registerUser, submitMessage, trackVisitor, SUPPORT_PHONE, SUPPORT_EMAIL, maskEmail } from './services';
+import { registerUser, submitMessage, trackVisitor, SUPPORT_PHONE, SUPPORT_EMAIL, maskEmail, getProducts } from './services';
 
 /* ------------------------------------------------------------------ */
 /*  LANGUAGE SWITCHER                                                    */
@@ -347,86 +347,20 @@ function ProductsSection() {
   const { t, lang } = useLang();
   const [selectedProduct, setSelectedProduct] = useState<number | null>(null);
 
-  const products = [
-    {
-      id: 1,
-      title: lang === 'ar' ? 'لوح تقديم الجوز' : 'Walnut Serving Board',
-      category: t('showcase.cat1'),
-      price: '$245',
-      img: '/images/product-1.jpg',
-      description: lang === 'ar' ? 'مصنوع من الجوز الأسود الفاخر، مصقول حتى 400 حبيبة' : 'Made from premium black walnut, sanded to 400 grit',
-      material: lang === 'ar' ? 'جوز أسود أمريكي' : 'American Black Walnut',
-      dimensions: lang === 'ar' ? '45 × 30 × 2 سم' : '18" × 12" × 0.75"',
-      care: lang === 'ar' ? 'اغسل يدوياً، زيت معدني شهرياً' : 'Hand wash only, oil monthly',
-      status: 'inStock',
-      featured: true,
-    },
-    {
-      id: 2,
-      title: lang === 'ar' ? 'لوح تقطيع البلوط' : 'Oak Cutting Board',
-      category: t('showcase.cat2'),
-      price: '$195',
-      img: '/images/product-2.jpg',
-      description: lang === 'ar' ? 'بناء من الحبوب النهائية، مقبض منحوت' : 'End-grain construction, carved handle',
-      material: lang === 'ar' ? 'بلوط أبيض' : 'White Oak',
-      dimensions: lang === 'ar' ? '40 × 30 × 4 سم' : '16" × 12" × 1.5"',
-      care: lang === 'ar' ? 'اغسل يدوياً، شمع العسل شهرياً' : 'Hand wash, beeswax monthly',
-      status: 'inStock',
-      featured: true,
-    },
-    {
-      id: 3,
-      title: lang === 'ar' ? 'صندوق مجوهرات القيقب' : 'Maple Jewelry Box',
-      category: t('showcase.cat3'),
-      price: '$320',
-      img: '/images/product-3.jpg',
-      description: lang === 'ar' ? 'مفصلات نحاسية، بطانة مخملية' : 'Brass hinges, velvet-lined interior',
-      material: lang === 'ar' ? 'قيقب صلب' : 'Hard Maple',
-      dimensions: lang === 'ar' ? '25 × 20 × 15 سم' : '10" × 8" × 6"',
-      care: lang === 'ar' ? 'امسح بقطعة قماش جافة' : 'Wipe with dry cloth',
-      status: 'limited',
-      featured: true,
-    },
-    {
-      id: 4,
-      title: lang === 'ar' ? 'سلطة الكرز' : 'Cherry Salad Bowl',
-      category: lang === 'ar' ? 'سلطانيات' : 'Bowls',
-      price: '$185',
-      img: '/images/product-1.jpg',
-      description: lang === 'ar' ? 'وعاء عميق من خشب الكرز الطبيعي' : 'Deep bowl from natural cherry wood',
-      material: lang === 'ar' ? 'كرز أمريكي' : 'American Cherry',
-      dimensions: lang === 'ar' ? '28 × 12 سم' : '11" × 5"',
-      care: lang === 'ar' ? 'اغسل يدوياً فوراً' : 'Wash immediately by hand',
-      status: 'inStock',
-      featured: false,
-    },
-    {
-      id: 5,
-      title: lang === 'ar' ? 'طقم أدوات المائدة' : 'Utensil Set',
-      category: lang === 'ar' ? 'أدوات' : 'Utensils',
-      price: '$95',
-      img: '/images/product-2.jpg',
-      description: lang === 'ar' ? '5 قطع من الجوز مع حامل' : '5-piece walnut set with holder',
-      material: lang === 'ar' ? 'جوز وزيتون' : 'Walnut & Olive',
-      dimensions: lang === 'ar' ? '30 × 8 × 8 سم' : '12" × 3" × 3"',
-      care: lang === 'ar' ? 'اغسل يدوياً، زيت أسبوعياً' : 'Hand wash, oil weekly',
-      status: 'inStock',
-      featured: false,
-    },
-    {
-      id: 6,
-      title: lang === 'ar' ? 'لوح الجبن الفاخر' : 'Charcuterie Board',
-      category: lang === 'ar' ? 'تقديم' : 'Serving',
-      price: '$275',
-      img: '/images/product-3.jpg',
-      description: lang === 'ar' ? 'خشب ممزوج بتصميم فريد' : 'Mixed wood with unique pattern',
-      material: lang === 'ar' ? 'جوز وبلوط وقيقب' : 'Walnut, Oak & Maple',
-      dimensions: lang === 'ar' ? '50 × 35 × 2 سم' : '20" × 14" × 0.75"',
-      care: lang === 'ar' ? 'امسح، زيت شهرياً' : 'Wipe clean, oil monthly',
-      status: 'madeToOrder',
-      featured: false,
-    },
-  ];
+  const rawProducts = getProducts();
+  const products = rawProducts.map(p => ({
+    id: parseInt(p.id.replace(/\D/g, ''), 10) || Math.random(),
+    title: lang === 'ar' ? p.titleAr : p.title,
+    category: lang === 'ar' ? p.categoryAr : p.category,
+    price: p.price,
+    img: p.img,
+    description: lang === 'ar' ? p.descriptionAr : p.description,
+    material: lang === 'ar' ? p.materialAr : p.material,
+    dimensions: lang === 'ar' ? p.dimensionsAr : p.dimensions,
+    care: lang === 'ar' ? p.careAr : p.care,
+    status: p.status,
+    featured: p.featured,
+  }));
 
   return (
     <section id="products" className="relative py-28 md:py-36 overflow-hidden">

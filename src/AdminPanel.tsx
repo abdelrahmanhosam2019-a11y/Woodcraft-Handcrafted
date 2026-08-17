@@ -2,15 +2,16 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Lock, Mail, User, Eye, EyeOff, Users, MessageSquare,
-  Send, Activity, LogOut, Shield, RefreshCw
+  Send, Activity, LogOut, Shield, RefreshCw, Package, Plus, Trash2, Edit3, Save, Star
 } from 'lucide-react';
 import { useLang } from './i18n';
 import {
   isAdminLoggedIn, adminLogin, adminLogout,
   getVisitorCount, getUsers, getMessages, getAdminEmailLog,
   getSiteUpdates, broadcastUpdate, getVisitorLog,
-  maskEmail
+  maskEmail, getProducts, addProduct, updateProduct, deleteProduct
 } from './services';
+import type { Product } from './services';
 
 interface AdminPanelProps {
   isOpen: boolean;
@@ -126,7 +127,7 @@ function AdminDashboard({ onLogout, t, lang }: { onLogout: () => void; t: (k: st
   const [updateTitle, setUpdateTitle] = useState('');
   const [updateMsg, setUpdateMsg] = useState('');
   const [broadcastSuccess, setBroadcastSuccess] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'messages' | 'emails' | 'updates' | 'visitors'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'messages' | 'emails' | 'updates' | 'visitors' | 'products'>('overview');
 
   const refresh = () => setRefreshKey(k => k + 1);
 
@@ -164,6 +165,7 @@ function AdminDashboard({ onLogout, t, lang }: { onLogout: () => void; t: (k: st
     { id: 'emails', label: lang === 'ar' ? 'البريد' : 'Emails', icon: Mail },
     { id: 'visitors', label: lang === 'ar' ? 'الزوار' : 'Visitors', icon: User },
     { id: 'updates', label: lang === 'ar' ? 'الإعلانات' : 'Updates', icon: Send },
+    { id: 'products', label: lang === 'ar' ? 'المنتجات' : 'Products', icon: Package },
   ] as const;
 
   return (
@@ -392,6 +394,251 @@ function AdminDashboard({ onLogout, t, lang }: { onLogout: () => void; t: (k: st
             </div>
           </div>
         )}
+
+        {activeTab === 'products' && (
+          <ProductsTab lang={lang} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  PRODUCTS TAB                                                        */
+/* ------------------------------------------------------------------ */
+function ProductsTab({ lang }: { lang: string }) {
+  const [products, setProducts] = useState<Product[]>(getProducts());
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+
+  const emptyForm: Omit<Product, 'id'> = {
+    title: '', titleAr: '',
+    category: '', categoryAr: '',
+    price: '', img: '/images/product-1.jpg',
+    description: '', descriptionAr: '',
+    material: '', materialAr: '',
+    dimensions: '', dimensionsAr: '',
+    care: '', careAr: '',
+    status: 'inStock', featured: false,
+  };
+  const [form, setForm] = useState<Omit<Product, 'id'>>(emptyForm);
+
+  const refresh = () => setProducts(getProducts());
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editingProduct) {
+      updateProduct(editingProduct.id, form);
+    } else {
+      addProduct(form);
+    }
+    setShowForm(false);
+    setEditingProduct(null);
+    setForm(emptyForm);
+    refresh();
+  };
+
+  const handleEdit = (p: Product) => {
+    setEditingProduct(p);
+    setForm({ ...p });
+    setShowForm(true);
+  };
+
+  const handleDelete = (id: string) => {
+    deleteProduct(id);
+    setConfirmDelete(null);
+    refresh();
+  };
+
+  const handleCancel = () => {
+    setShowForm(false);
+    setEditingProduct(null);
+    setForm(emptyForm);
+  };
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <h3 className="font-display text-xl text-cream">
+          {lang === 'ar' ? 'إدارة المنتجات' : 'Manage Products'} ({products.length})
+        </h3>
+        {!showForm && (
+          <button
+            onClick={() => { setEditingProduct(null); setForm(emptyForm); setShowForm(true); }}
+            className="px-4 py-2.5 rounded-xl bg-amber text-ink font-semibold hover:bg-amber-soft transition-colors flex items-center gap-2 text-sm"
+          >
+            <Plus className="w-4 h-4" />
+            {lang === 'ar' ? 'إضافة منتج' : 'Add Product'}
+          </button>
+        )}
+      </div>
+
+      {showForm && (
+        <form onSubmit={handleSave} className="mb-6 p-5 rounded-2xl bg-white/5 border border-white/10 space-y-4">
+          <h4 className="font-display text-lg text-cream">
+            {editingProduct
+              ? (lang === 'ar' ? 'تعديل منتج' : 'Edit Product')
+              : (lang === 'ar' ? 'منتج جديد' : 'New Product')}
+          </h4>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs text-parchment/50 mb-1">Title (EN)</label>
+              <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required
+                className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-cream text-sm focus:outline-none focus:border-amber/40" />
+            </div>
+            <div>
+              <label className="block text-xs text-parchment/50 mb-1">العنوان (AR)</label>
+              <input value={form.titleAr} onChange={e => setForm({ ...form, titleAr: e.target.value })} required dir="rtl"
+                className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-cream text-sm focus:outline-none focus:border-amber/40" />
+            </div>
+            <div>
+              <label className="block text-xs text-parchment/50 mb-1">Category (EN)</label>
+              <input value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} required
+                className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-cream text-sm focus:outline-none focus:border-amber/40" />
+            </div>
+            <div>
+              <label className="block text-xs text-parchment/50 mb-1">التصنيف (AR)</label>
+              <input value={form.categoryAr} onChange={e => setForm({ ...form, categoryAr: e.target.value })} required dir="rtl"
+                className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-cream text-sm focus:outline-none focus:border-amber/40" />
+            </div>
+            <div>
+              <label className="block text-xs text-parchment/50 mb-1">Price</label>
+              <input value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} required placeholder="$0"
+                className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-cream text-sm focus:outline-none focus:border-amber/40" />
+            </div>
+            <div>
+              <label className="block text-xs text-parchment/50 mb-1">Image URL</label>
+              <input value={form.img} onChange={e => setForm({ ...form, img: e.target.value })} required
+                className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-cream text-sm focus:outline-none focus:border-amber/40" />
+            </div>
+            <div>
+              <label className="block text-xs text-parchment/50 mb-1">Description (EN)</label>
+              <input value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} required
+                className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-cream text-sm focus:outline-none focus:border-amber/40" />
+            </div>
+            <div>
+              <label className="block text-xs text-parchment/50 mb-1">الوصف (AR)</label>
+              <input value={form.descriptionAr} onChange={e => setForm({ ...form, descriptionAr: e.target.value })} required dir="rtl"
+                className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-cream text-sm focus:outline-none focus:border-amber/40" />
+            </div>
+            <div>
+              <label className="block text-xs text-parchment/50 mb-1">Material (EN)</label>
+              <input value={form.material} onChange={e => setForm({ ...form, material: e.target.value })} required
+                className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-cream text-sm focus:outline-none focus:border-amber/40" />
+            </div>
+            <div>
+              <label className="block text-xs text-parchment/50 mb-1">المادة (AR)</label>
+              <input value={form.materialAr} onChange={e => setForm({ ...form, materialAr: e.target.value })} required dir="rtl"
+                className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-cream text-sm focus:outline-none focus:border-amber/40" />
+            </div>
+            <div>
+              <label className="block text-xs text-parchment/50 mb-1">Dimensions (EN)</label>
+              <input value={form.dimensions} onChange={e => setForm({ ...form, dimensions: e.target.value })} required
+                className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-cream text-sm focus:outline-none focus:border-amber/40" />
+            </div>
+            <div>
+              <label className="block text-xs text-parchment/50 mb-1">الأبعاد (AR)</label>
+              <input value={form.dimensionsAr} onChange={e => setForm({ ...form, dimensionsAr: e.target.value })} required dir="rtl"
+                className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-cream text-sm focus:outline-none focus:border-amber/40" />
+            </div>
+            <div>
+              <label className="block text-xs text-parchment/50 mb-1">Care (EN)</label>
+              <input value={form.care} onChange={e => setForm({ ...form, care: e.target.value })} required
+                className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-cream text-sm focus:outline-none focus:border-amber/40" />
+            </div>
+            <div>
+              <label className="block text-xs text-parchment/50 mb-1">العناية (AR)</label>
+              <input value={form.careAr} onChange={e => setForm({ ...form, careAr: e.target.value })} required dir="rtl"
+                className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-cream text-sm focus:outline-none focus:border-amber/40" />
+            </div>
+            <div>
+              <label className="block text-xs text-parchment/50 mb-1">Status</label>
+              <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as Product['status'] })}
+                className="w-full px-3 py-2.5 bg-white/5 border border-white/10 rounded-xl text-cream text-sm focus:outline-none focus:border-amber/40">
+                <option value="inStock">{lang === 'ar' ? 'متوفر' : 'In Stock'}</option>
+                <option value="limited">{lang === 'ar' ? 'محدود' : 'Limited'}</option>
+                <option value="madeToOrder">{lang === 'ar' ? 'حسب الطلب' : 'Made to Order'}</option>
+              </select>
+            </div>
+            <div className="flex items-end">
+              <label className="flex items-center gap-2 cursor-pointer py-2.5">
+                <input type="checkbox" checked={form.featured} onChange={e => setForm({ ...form, featured: e.target.checked })}
+                  className="w-4 h-4 rounded border-white/20 bg-white/5 text-amber focus:ring-amber/40" />
+                <Star className="w-4 h-4 text-amber" />
+                <span className="text-sm text-cream">{lang === 'ar' ? 'منتج مميز' : 'Featured'}</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <button type="submit"
+              className="px-5 py-2.5 rounded-xl bg-amber text-ink font-semibold hover:bg-amber-soft transition-colors flex items-center gap-2 text-sm">
+              <Save className="w-4 h-4" />
+              {editingProduct ? (lang === 'ar' ? 'حفظ التعديلات' : 'Save Changes') : (lang === 'ar' ? 'إضافة' : 'Add Product')}
+            </button>
+            <button type="button" onClick={handleCancel}
+              className="px-5 py-2.5 rounded-xl bg-white/5 text-cream hover:bg-white/10 transition-colors text-sm">
+              {lang === 'ar' ? 'إلغاء' : 'Cancel'}
+            </button>
+          </div>
+        </form>
+      )}
+
+      <div className="space-y-3 max-h-[600px] overflow-y-auto">
+        {products.length === 0 ? (
+          <p className="text-sm text-parchment/40 text-center py-8">
+            {lang === 'ar' ? 'لا يوجد منتجات' : 'No products yet'}
+          </p>
+        ) : products.map((p) => (
+          <div key={p.id} className="p-4 rounded-xl bg-white/5 border border-white/5 flex items-center gap-4">
+            <img src={p.img} alt={p.title} className="w-16 h-16 rounded-lg object-cover shrink-0" />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="text-cream font-medium truncate">{lang === 'ar' ? p.titleAr : p.title}</p>
+                {p.featured && <Star className="w-3 h-3 text-amber shrink-0" fill="currentColor" />}
+              </div>
+              <p className="text-xs text-parchment/40">{lang === 'ar' ? p.categoryAr : p.category} · {p.price}</p>
+              <div className="flex items-center gap-2 mt-1">
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
+                  p.status === 'inStock' ? 'bg-emerald-500/20 text-emerald-300'
+                  : p.status === 'limited' ? 'bg-amber/20 text-amber'
+                  : 'bg-sky-500/20 text-sky-300'
+                }`}>
+                  {p.status === 'inStock' ? (lang === 'ar' ? 'متوفر' : 'In Stock')
+                    : p.status === 'limited' ? (lang === 'ar' ? 'محدود' : 'Limited')
+                    : (lang === 'ar' ? 'حسب الطلب' : 'Made to Order')}
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button onClick={() => handleEdit(p)}
+                className="p-2 rounded-lg bg-white/5 hover:bg-amber/20 text-cream hover:text-amber transition-colors"
+                aria-label="Edit">
+                <Edit3 className="w-4 h-4" />
+              </button>
+              {confirmDelete === p.id ? (
+                <div className="flex items-center gap-1">
+                  <button onClick={() => handleDelete(p.id)}
+                    className="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-300 text-xs font-medium hover:bg-red-500/30 transition-colors">
+                    {lang === 'ar' ? 'تأكيد' : 'Yes'}
+                  </button>
+                  <button onClick={() => setConfirmDelete(null)}
+                    className="px-3 py-1.5 rounded-lg bg-white/5 text-cream text-xs hover:bg-white/10 transition-colors">
+                    {lang === 'ar' ? 'إلغاء' : 'No'}
+                  </button>
+                </div>
+              ) : (
+                <button onClick={() => setConfirmDelete(p.id)}
+                  className="p-2 rounded-lg bg-white/5 hover:bg-red-500/20 text-cream hover:text-red-300 transition-colors"
+                  aria-label="Delete">
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
